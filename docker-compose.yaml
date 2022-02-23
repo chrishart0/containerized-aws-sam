@@ -1,0 +1,23 @@
+version: '3.6'
+services:
+  sam:
+    build: .
+    environment:
+      - TZ=Etc/GMT
+      - SAM_CLI_TELEMETRY=false
+      - DOCKER_HOST=unix:///var/run/docker.sock
+    volumes:
+      - $PWD:$PWD
+      - /var/run/docker.sock:/var/run/docker.sock #Needed so a docker container can be run from inside a docker container
+      - ~/.aws/:/root/.aws:ro
+    working_dir: $PWD
+    command: ['/bin/bash', "./entrypoint.sh"]
+    ports:
+      - "3000:3000"
+    networks:
+      - "backend"
+
+networks:
+  backend:
+    name: aws_backend
+    driver: bridge
