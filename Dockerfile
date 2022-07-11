@@ -8,12 +8,18 @@ RUN apt-get update && apt-get install -y \
     software-properties-common \
     && npm install -g aws-cdk ts-node
 
-# Install deps for SAM Backend
+# Install deps for SAM Backend, including python3-pip
+# Avoid errors with pip not found 
+# https://stackoverflow.com/questions/48588449/docker-issue-bin-sh-pip-not-found/67297734#67297734
 RUN apt-get install -y \
-    python3.9 \
-    python3.8-venv python3.9-venv \
-    && pip install pip \
-    && pip install awscli aws-sam-cli==1.12.0 \
+    python3.9 python3-pip \
+    python3.8-venv python3.9-venv 
+
+# Keep jinja version to specific to avoid breaking
+# mporterror: cannot import name ‘escape’ from ‘jinja2’ 
+# https://www.datasciencelearner.com/importerror-cannot-import-name-escape-from-jinja2-solved/
+RUN pip install pip \
+    && pip install Jinja2==3.0.3 awscli aws-sam-cli==1.12.0 \
     && rm -rf /var/lib/apt/lists/*
 
 # we are able to override the CMD instruction and execute any command successfully. 
